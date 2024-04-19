@@ -5,11 +5,10 @@ import InputError          from '@/Components/InputError.vue';
 import PrimaryButton       from '@/Components/PrimaryButton.vue';
 import {useForm, Head}     from '@inertiajs/vue3';
 
-defineProps(['chirps']);
-
 const form = useForm({
     message: ''
 });
+
 </script>
 
 <template>
@@ -25,11 +24,27 @@ const form = useForm({
             </form>
 
             <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
-                <Chirp v-for="chirp in chirps" :key="chirp.id" :chirp="chirp"/>
+                <Chirp v-for="chirp in chirps.data" :key="chirp.id" :chirp="chirp"/>
+            </div>
+            <div class="mt-6 bg-white content-center shadow-sm rounded-lg divide-y">
+                <Pagination :links="chirps.links"/>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
+
+<script>
+import Pagination from '@/Components/Pagination.vue';
+
+export default {
+    components: {
+        Pagination
+    },
+    props     : {
+        chirps: Object
+    }
+}
+</script>
 
 <style scoped>
 

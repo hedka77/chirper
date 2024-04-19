@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\DB;
 
 class ChirpController extends Controller
 {
@@ -17,7 +18,19 @@ class ChirpController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Chirps/Index', [ 'chirps' => Chirp::with('user:id,name')->latest()->get(), ]);
+        //return Inertia::render('Chirps/Index', [ 'chirps' => Chirp::with('user:id,name')->latest()->get(), ]);
+        $chirps = Chirp::with('user:id,name')->latest()->paginate(15)->through(function($item) {
+            return [ 'id'         => $item->id,
+                     'user_id'    => $item->user_id,
+                     'name'       => $item->user->name,
+                     'message'    => $item->message,
+                     'created_at' => $item->created_at,
+                     'updated_at' => $item->updated_at,
+
+            ];
+        });
+
+        return Inertia::render('Chirps/Index', ['chirps' => $chirps,]);
     }
 
     /**
@@ -62,7 +75,6 @@ class ChirpController extends Controller
     //public function update(Request $request, Chirp $chirp)
     public function update(StoreChirpsRequest $request, Chirp $chirp): RedirectResponse
     {
-        //
         Gate::authorize('update', $chirp);
 
         $validated = $request->validated();
@@ -75,8 +87,12 @@ class ChirpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Chirp $chirp)
+    public function destroy(Chirp $chirp): RedirectResponse
     {
-        //
+        Gate::authorize('delete', $chirp);
+
+        $chirp->delete();
+
+        return redirect(route('chirps.index'));
     }
 }

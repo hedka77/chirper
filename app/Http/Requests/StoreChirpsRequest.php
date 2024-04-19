@@ -13,7 +13,8 @@ class StoreChirpsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Gate::authorize('update', $chirp);
+        return true;
+        //return Gate::authorize('update', $chirp);
     }
 
     /**
@@ -23,8 +24,6 @@ class StoreChirpsRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'message' => ['required','string|max:255'],
-        ];
+        return [ 'message' => [ 'required', 'string', 'max:255' ], ];
     }
 }

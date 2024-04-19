@@ -1,5 +1,6 @@
 <script setup>
 import Dropdown      from '@/Components/Dropdown.vue';
+import DropdownLink  from '@/Components/DropdownLink.vue';
 import InputError    from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import dayjs         from 'dayjs';
@@ -26,13 +27,15 @@ const editing = ref(false);
         <div class="flex-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <span class="text-gray-800">{{ chirp.user.name }}</span>
+<!--                    <span class="text-gray-800">{{ chirp.user.name }}</span>-->
+                    <span class="text-gray-800">{{ chirp.name }}</span>
                     <!--<small class="ml-2 text-sm text-gray-600">{{ new Date(chirp.created_at).toLocaleString() }}</small>-->
                     <small
                         class="ml-2 text-sm text-gray-600">{{ dayjs(chirp.created_at).fromNow() }} ({{ new Date(chirp.created_at).toLocaleString() }})</small>
                     <small v-if="chirp.created_at !== chirp.updated_at" class="text-sm text-gray-600"> &middot; edited</small>
                 </div>
-                <Dropdown v-if="chirp.user.id === $page.props.auth.user.id">
+<!--                <Dropdown v-if="chirp.user.id === $page.props.auth.user.id">-->
+                <Dropdown v-if="chirp.user_id === $page.props.auth.user.id">
                     <template #trigger>
                         <button>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -46,10 +49,13 @@ const editing = ref(false);
                             @click="editing = true">
                             Edit
                         </button>
+                        <DropdownLink as="button" :href="route('chirps.destroy', chirp.id)" method="delete">
+                            Delete
+                        </DropdownLink>
                     </template>
                 </Dropdown>
             </div>
-<!--            <p class="mt-4 text-lg text-gray-900">{{ chirp.message }}</p>-->
+            <!--            <p class="mt-4 text-lg text-gray-900">{{ chirp.message }}</p>-->
             <form v-if="editing" @submit.prevent="form.put(route('chirps.update', chirp.id), { onSuccess: () => editing = false })">
                 <textarea v-model="form.message"
                           class="mt-4 w-full text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"></textarea>
